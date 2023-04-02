@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<!--- 命名空间 namespace -->
+<mapper namespace="com.example.java.mapper.UserMapper">
+    <update id="Update">
+        update user
+        <set>
+            <if test="nickname != null">
+                nickname=#{nickname},
+            </if>
+            <if test="img != null">
+                img=#{img},
+            </if>
+            <if test="qq != null">
+                qq=#{qq},
+            </if>
+            <if test="wechat != null">
+                wechat=#{wechat},
+            </if>
+            <if test="phone != null">
+                phone!=#{phone},
+            </if>
+            <if test="email != null">
+                email=#{email}
+            </if>
+        </set>
+        <where>
+            uid=#{uid}
+        </where>
+    </update>
+    <select id="findUser" resultType="com.example.java.entity.dto.UserDto">
+        select * from user
+        <where>
+            <if test="query_content != null">
+                CONCAT(username, nickname) like '%${query_content}%'
+            </if>
+        </where>
+        limit ${Page.start},${Page.pageSize}
+    </select>
+</mapper>
