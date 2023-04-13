@@ -20,4 +20,5 @@ public class User {
     private String time;
     private int role;
     private int del;
+    private double balance;
 }

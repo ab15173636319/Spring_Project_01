@@ -11,31 +11,31 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class JwtUtil {
-    public static String SECRET= "1c2h3e4n5w6e7i8x9i0n";
+    public static String SECRET = "1c2h3e4n5w6e7i8x9i0n";
 
-    public static String getToken(Map<String, String> map){
-        JWTCreator.Builder builder= JWT.create();
-        map.forEach((k,v)->{
-            builder.withClaim(k,v);
+    public static String getToken(Map<String, String> map) {
+        JWTCreator.Builder builder = JWT.create();
+        map.forEach((k, v) -> {
+            builder.withClaim(k, v);
         });
-        Calendar instance= Calendar.getInstance();
+        Calendar instance = Calendar.getInstance();
         instance.add(Calendar.HOUR, 2);  //默认2小时过期
 
         builder.withExpiresAt(instance.getTime());
-        String token= builder.sign(Algorithm.HMAC256(SECRET));
+        String token = builder.sign(Algorithm.HMAC256(SECRET));
         return token;
     }
 
-    public static DecodedJWT verfy(String token){
-        DecodedJWT decodedJWT= JWT.require(Algorithm.HMAC256(SECRET)).build().verify(token);
+    public static DecodedJWT verfy(String token) {
+        DecodedJWT decodedJWT = JWT.require(Algorithm.HMAC256(SECRET)).build().verify(token);
         return decodedJWT;
     }
 
     @Test
     public void test() {
-        Map<String,String> map=new HashMap<>();
+        Map<String, String> map = new HashMap<>();
         map.put("username", "1107230602");
         map.put("password", "0246813579");
-        String token= JwtUtil.getToken(map);
+        String token = JwtUtil.getToken(map);
     }
 }

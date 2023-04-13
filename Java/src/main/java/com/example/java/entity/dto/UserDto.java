@@ -16,5 +16,6 @@ public class UserDto {
     private String wechat;
     private String phone;
     private String email;
+    private int role;
     private String time;
 }

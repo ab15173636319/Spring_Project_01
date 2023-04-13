@@ -2,16 +2,13 @@ package com.example.java.controrller;
 
 import com.example.java.entity.User;
 import com.example.java.entity.dto.UserDto;
-import com.example.java.entity.page;
+import com.example.java.entity.Page;
 import com.example.java.mapper.PageMapper;
 import com.example.java.mapper.UserMapper;
 import com.example.java.util.JwtUtil;
-import org.apache.ibatis.session.SqlSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
-import javax.xml.transform.Result;
-import java.awt.*;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -26,19 +23,37 @@ public class UserController extends PageController {
     //增加用户
     @PostMapping("/reg")
     //RequestBody：前端提交一个JSON对象来时，可将这个对象转换为普通对象
-    public Integer save(@RequestBody User user) {
-        return userMapper.AddUser(user);
+    public Map<String, Object> save(@RequestBody User user) {
+        Map<String, Object> map = new HashMap<>();
+        int backNum = userMapper.AddUser(user);
+        if (backNum > 0) {
+            map.put("success", true);
+            map.put("message", "注册修改");
+        } else {
+            map.put("success", false);
+            map.put("message", "注册失败");
+        }
+        return map;
     }
 
     //修改用户信息
     @PostMapping("/modify")
-    public Integer Modify(@RequestBody User user) {
-        return userMapper.Update(user);
+    public Map<String, Object> Modify(@RequestBody User user) {
+        Map<String, Object> map = new HashMap<>();
+        int backNum = userMapper.Update(user);
+        if (backNum > 0) {
+            map.put("success", true);
+            map.put("message", "修改");
+        } else {
+            map.put("success", false);
+            map.put("message", "修改失败");
+        }
+        return map;
     }
 
     //获取所有用户信息
     @PostMapping("/queryAll")
-    public Map<String, Object> index(String query_content, page Page) {
+    public Map<String, Object> index(String query_content, Page Page) {
         Map<String, Object> map = new HashMap<>();
         //获取所有用户信息
         List<UserDto> list = userMapper.findUser(query_content, Page);
@@ -56,12 +71,16 @@ public class UserController extends PageController {
 
     //删除用户
     @PostMapping("/delUser")
-    public int DelUser(@RequestBody User user) {
+    public Map<String, Object> DelUser(@RequestBody User user) {
+        Map<String, Object> map = new HashMap<>();
         if (user.getDel() == 0) {
-            return 0;
+            map.put("success", true);
+            map.put("message", "删除成功");
         } else {
-            return userMapper.DelUser(user.getUid());
+            map.put("success", false);
+            map.put("message", "此用户不能删除");
         }
+        return map;
     }
 
     //用户登录
@@ -82,6 +101,21 @@ public class UserController extends PageController {
         } else {
             map.put("success", false);
             map.put("message", "账号或密码错误");
+        }
+        return map;
+    }
+
+    //根据用户id查询
+    @PostMapping("/queryUserById")
+    public Map<String, Object> queryUser(UserDto user) {
+        Map<String, Object> map = new HashMap<>();
+        user = userMapper.queryUserById(user);
+        if (user != null) {
+            map.put("success", true);
+            map.put("user", user);
+        } else {
+            map.put("success", false);
+            map.put("message", "未找到改用户");
         }
         return map;
     }
