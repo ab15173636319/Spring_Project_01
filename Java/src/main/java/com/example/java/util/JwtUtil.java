@@ -30,12 +30,4 @@ public class JwtUtil {
         DecodedJWT decodedJWT = JWT.require(Algorithm.HMAC256(SECRET)).build().verify(token);
         return decodedJWT;
     }
-
-    @Test
-    public void test() {
-        Map<String, String> map = new HashMap<>();
-        map.put("username", "1107230602");
-        map.put("password", "0246813579");
-        String token = JwtUtil.getToken(map);
-    }
 }

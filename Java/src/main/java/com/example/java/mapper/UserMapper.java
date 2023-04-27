@@ -29,6 +29,10 @@ public interface UserMapper {
 
     @Select("select * from user where uid=#{uid}")
     UserDto queryUserById(UserDto user);
+
+    //注册经商
+    @Insert("insert into business(uid) values(#{uid}})")
+    int beBusiness(User user);
 }
 
 

@@ -1,6 +1,8 @@
 package com.example.java.controrller;
 
+import com.auth0.jwt.interfaces.DecodedJWT;
 import com.example.java.entity.User;
+import com.example.java.entity.dto.Goods_remark;
 import com.example.java.entity.dto.UserDto;
 import com.example.java.entity.Page;
 import com.example.java.mapper.PageMapper;
@@ -9,16 +11,27 @@ import com.example.java.util.JwtUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.Cookie;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 @RestController
 @RequestMapping("/user")
-public class UserController extends PageController {
+public class UserController {
     @Autowired
     private UserMapper userMapper;
     private PageMapper pageMapper;
+
+    Goods_remark gr = new Goods_remark();
+
+    @GetMapping("/test")
+    public String Test() {
+        return "链接成功";
+    }
 
     //增加用户
     @PostMapping("/reg")
@@ -83,24 +96,51 @@ public class UserController extends PageController {
         return map;
     }
 
+    //获取用户信息
+
+
     //用户登录
     @PostMapping("/login")
-    public Map<String, Object> login(User user) {
+    public Map<String, Object> login(HttpServletResponse response, HttpServletRequest request, User user, String remember) {
+        System.out.println(remember);
         Map<String, Object> map = new HashMap<>();
         user = userMapper.login(user);
         if (user != null) {
             //生成token
             Map<String, String> tokenmap = new HashMap<>();
-            tokenmap.put("username", user.getUsername());
-            tokenmap.put("password", user.getPassword());
-            String token = JwtUtil.getToken(tokenmap);
-            map.put("token", token);
+//            tokenmap.put("username", user.getUsername());
+//            tokenmap.put("password", user.getPassword());
+//            String token = JwtUtil.getToken(tokenmap);
+//            map.put("token", token);
+            if (remember != null) {
+                //发送cookie给客户端
+                Cookie cookie = new Cookie("auto_login", user.getUsername() + "#itheima#" + user.getPassword());
+                cookie.setMaxAge(60 * 60 * 24 * 7);//保存时间设为7天
+                cookie.setPath(request.getRequestURL().toString());
+                response.addCookie(cookie);//将保存的cookie信息给浏览器
+                System.out.println("OK");
+            }
             map.put("message", "登录成功");
             map.put("success", true);
             map.put("user", user);
         } else {
             map.put("success", false);
             map.put("message", "账号或密码错误");
+        }
+        return map;
+    }
+
+    //注册成为商家
+    @PostMapping("/beBusiness")
+    public Map<String, Object> beBusiness(User user) {
+        Map<String, Object> map = new HashMap<>();
+        int backNum = userMapper.beBusiness(user);
+        if (backNum > 0) {
+            map.put("success", true);
+            map.put("message", "已成为商家");
+        } else {
+            map.put("success", false);
+            map.put("message", "注册失败");
         }
         return map;
     }
